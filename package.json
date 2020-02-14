@@ -2,16 +2,11 @@
   "name": "djcrowdsource",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-scripts": "3.2.0"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "node ./tools/server/start.js",
+    "start:dev": "NODE_ENV=development npm start",
+    "start:devserver": "webpack-dev-server --config ./tools/webpack/webpack.dev.js",
+    "start:server": "nodemon --watch ./src/server src/server/index.js --exec babel-node"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -27,5 +22,69 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "_moduleAliases": {
+    "modules": "src/client/modules",
+    "context": "src/client/context"
+  },
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.3",
+    "@emotion/babel-preset-css-prop": "^10.0.23",
+    "@emotion/core": "^10.0.22",
+    "@hapi/hapi": "^18.4.0",
+    "@hapi/inert": "^5.2.2",
+    "@hapi/vision": "^5.5.4",
+    "@hapi/wreck": "^16.0.1",
+    "apollo-cache-inmemory": "^1.6.3",
+    "apollo-client": "^2.6.4",
+    "apollo-link": "^1.2.13",
+    "apollo-link-http": "^1.5.16",
+    "apollo-link-ws": "^1.0.19",
+    "apollo-server-hapi": "^2.9.16",
+    "apollo-utilities": "^1.3.3",
+    "app-root-path": "^3.0.0",
+    "debounce": "^1.2.0",
+    "graphql": "^14.5.8",
+    "graphql-tag": "^2.10.1",
+    "graphql-tools": "^4.0.6",
+    "handlebars": "^4.5.1",
+    "ignore-styles": "^5.0.1",
+    "js-cookie": "^2.2.1",
+    "lodash.debounce": "^4.0.8",
+    "module-alias": "^2.2.2",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^1.19.4",
+    "npm-run-all": "^4.1.5",
+    "react": "^16.11.0",
+    "react-debounce-hook": "^1.1.19",
+    "react-dom": "^16.11.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.2.0",
+    "socket.io": "^2.3.0",
+    "subscriptions-transport-ws": "^0.9.16"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-react": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-css-modules-transform": "^1.6.2",
+    "babel-plugin-import-graphql": "^2.7.0",
+    "babel-plugin-react-css-modules": "^5.2.6",
+    "css-loader": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "ignore-loader": "^0.1.2",
+    "style-loader": "^1.0.0",
+    "svg-inline-loader": "^0.8.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2",
+    "webpack-merge": "^4.2.2",
+    "webpack-node-externals": "^1.7.2"
   }
 }

@@ -1,0 +1,48 @@
+query searchMusic($query: String!){
+  searchMusic(query: $query){
+    artists {
+      limit
+      offset
+      total
+      items {
+        id
+        name
+        images {
+          height
+          width
+          url
+        }
+      }
+    }
+    albums {
+      limit
+      offset
+      total
+      items {
+        id
+        name
+        images {
+          height
+          width
+          url
+        }
+      }
+    }
+    tracks {
+      limit
+      offset
+      total
+      items {
+        id
+        name
+        album {
+          images {
+            height
+            width
+            url
+          }
+        }
+      }
+    }
+  }
+}
