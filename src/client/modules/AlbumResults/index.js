@@ -9,7 +9,13 @@ export default ({albums}) => {
                 const [thumb] = images;
 
                 return (
-                    <ResultItem key={id} title={name} image={thumb} />
+                    <ResultItem 
+                        key={id}
+                        itemId={id}
+                        title={name} 
+                        image={thumb}
+                        baseUrl="album"
+                    />
                 );
             })}
         </ul>

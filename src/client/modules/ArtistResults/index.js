@@ -9,7 +9,13 @@ export default ({artists}) => {
                 const [thumb] = images;
 
                 return (
-                    <ResultItem key={id} title={name} image={thumb} />
+                    <ResultItem 
+                        key={id} 
+                        title={name} 
+                        image={thumb} 
+                        itemId={id}
+                        baseUrl="artist"
+                    />
                 );
             })}
         </ul>

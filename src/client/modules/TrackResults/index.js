@@ -30,8 +30,8 @@ export default ({tracks}) => {
 
     return (
         <ul>
-            {tracks.map(({id, name, album: {images}}) => {
-                const [thumb] = images;
+            {tracks.map(({id, name, album: {images} = {}}, index) => {
+                const [thumb] = images ?? [];
 
                 return (
                     <ResultItem 
@@ -39,6 +39,7 @@ export default ({tracks}) => {
                         title={name} 
                         image={thumb} 
                         itemId={id}
+                        index={++index}
                     >
                         {(itemId) => (
                             <RequestTrackButton trackId={itemId} />

@@ -4,6 +4,13 @@
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-optional-chaining",
         "@babel/plugin-proposal-nullish-coalescing-operator",
-        "import-graphql"
+        "import-graphql",
+        ["module-resolver", {
+            "alias": {
+                "modules": "./src/client/modules",
+                "context": "./src/client/context",
+                "common": "./src/client/common"
+            }
+        }]
     ]
 }

@@ -1,0 +1,36 @@
+query getArtist($id: String!){
+    getArtist(id: $id) {
+        id
+        images {
+            height
+            width
+            url
+        }
+        name
+        albums {
+            items {
+                id
+                name
+                images {
+                    height
+                    width
+                    url
+                }
+
+            }
+        }
+        tracks {
+            items {
+                id
+                name
+                album {
+                    images {
+                        height
+                        width
+                        url
+                    }
+                }
+            }
+        }
+    }
+}

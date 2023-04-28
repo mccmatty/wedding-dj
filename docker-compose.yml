@@ -1,0 +1,18 @@
+version: "3"
+services:
+    app: 
+        build: .
+        ports:
+            - "8080:8080"
+        volumes: 
+            - .:/usr/src/app/
+            - /usr/src/app/node_modules
+        links:
+            - redis
+        environment:
+            REDIS_CONNECTION: redis://cache
+    redis:
+        image: redis
+        container_name: cache
+        expose: 
+            - 6379

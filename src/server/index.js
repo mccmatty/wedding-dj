@@ -1,4 +1,3 @@
-import 'module-alias/register'
 import Hapi from '@hapi/hapi';
 import Vision from '@hapi/vision';
 import Inert from '@hapi/inert';
@@ -8,18 +7,21 @@ import App from '../client/App';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import SpotifyClient from './clients/spotifyClient';
+import RedisClient from './clients/redisClient';
 import {ApolloClient} from 'apollo-client';
 import {ApolloProvider} from '@apollo/react-hooks';
 import {createHttpLink} from 'apollo-link-http';
 import {InMemoryCache} from "apollo-cache-inmemory";
 import fetch from 'node-fetch';
-import socketIo from 'socket.io';
 import {StaticRouter} from 'react-router';
 import dotenv from 'dotenv';
+import redis from 'redis';
 
 dotenv.config();
 
-const spotifyClient = new SpotifyClient(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_SECRET, process.env.PLAYLIST_ID)
+const spotifyClient = new SpotifyClient(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_SECRET, process.env.PLAYLIST_ID);
+const redisClient = RedisClient.getInstance();
+
 const pubsub = new PubSub();
 const QUEUE_UPDATED = 'QUEUE_UPDATED';
 
@@ -35,6 +37,8 @@ const typeDefs = `
     type Query {
         searchMusic(query: String!): SearchResults
         getQueue: Queue
+        getArtist(id: String!): Artist
+        getAlbum(id: String!): Album
     },
 
     type Mutation {
@@ -76,6 +80,8 @@ const typeDefs = `
         id: String
         images: [Image]
         name: String
+        albums: AlbumList
+        tracks: TrackList
     },
     type Track {
         id: String
@@ -87,6 +93,7 @@ const typeDefs = `
         id: String
         images: [Image]
         name: String
+        tracks: TrackList
     }
     type Image {
         height: Int
@@ -102,17 +109,32 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        searchMusic: (parent, {query}) => {
+        searchMusic: (_root, {query}) => {
             return spotifyClient.search(query);
         },
         getQueue: () => {
             return spotifyClient.getPlaylist();
-        } 
+        },
+        getArtist: (_root, {id}) => {
+            return spotifyClient.getArtist(id);
+        },
+        getAlbum: (_root, {id}) => {
+            return spotifyClient.getAlbum(id);
+        }
     },
     Mutation: {
-        addTrack: async (parent, {trackId}, context) => {
+        addTrack: async (_root, {trackId}, context) => {
             const playlist = await spotifyClient.addTrack(trackId);
-            console.log('THE PLAYLIST', playlist)
+            let voteCount = await redisClient.get(trackId);
+
+            if (!voteCount) {
+                voteCount = 0
+            }
+
+            await redisClient.set(trackId, ++voteCount);
+            const updated = await redisClient.get(trackId);
+            console.log(`VOTES FOR TRACK ${trackId}: ${updated}`);
+
             pubsub.publish(QUEUE_UPDATED, {queueUpdated: playlist})
             return null
         }
@@ -121,11 +143,18 @@ const resolvers = {
         queueUpdated: {
             subscribe: () => pubsub.asyncIterator([QUEUE_UPDATED])
         }
+    },
+    Artist: {
+        albums(_root) {
+            return spotifyClient.getArtistAlbums(_root.id);
+        },
+        tracks(_root) {
+            return spotifyClient.getArtistTracks(_root.id);
+        }
     }
 };
 
 const getContentBody = (req) => {
-    console.log('THE REQ', req.path);
     const AppContainer = (
         <ApolloProvider client={client}>
             <StaticRouter location={{pathname: req.path}} context={{}}>
@@ -139,6 +168,7 @@ const getContentBody = (req) => {
 
 
 const startServer = async () => {
+
     const apolloServer = await new ApolloServer({
         typeDefs, 
         resolvers,

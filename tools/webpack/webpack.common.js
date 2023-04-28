@@ -12,12 +12,6 @@ module.exports = {
         filename: '[name].bundle.js',
         path: BUILD_DIR
     },
-    resolve: {
-      alias: {
-        'modules': path.join(SRC_DIR, 'modules'),
-        'context': path.join(SRC_DIR, 'context')
-      }
-    },
     module: {
         rules: [
           {
@@ -30,6 +24,10 @@ module.exports = {
           {
             test: /\.css$/i,
             use: ['style-loader', 'css-loader']
+          },
+          {
+            test: /\.less$/i,
+            use: ['style-loader', 'css-loader', 'less-loader']
           },
           {
             test: /\.svg$/,

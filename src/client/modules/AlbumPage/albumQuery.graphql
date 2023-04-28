@@ -1,0 +1,17 @@
+query getAlbum($id: String!) {
+    getAlbum(id: $id) {
+        id
+        name
+        images {
+            height
+            width
+            url
+        }
+        tracks {
+            items {
+                id
+                name
+            }
+        }
+    }
+}

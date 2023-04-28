@@ -6,6 +6,8 @@ class SpotifyClient {
     static SEARCH_URL = 'https://api.spotify.com/v1/search';
     static TRACK_URL = 'https://api.spotify.com/v1/tracks';
     static PLAYLIST_URL = 'https://api.spotify.com/v1/playlists';
+    static ARTIST_URL = 'https://api.spotify.com/v1/artists';
+    static ALBUM_URL = 'https://api.spotify.com/v1/albums';
 
     constructor(clientId, secret, playlistId) {
         this.clientId = clientId;
@@ -101,6 +103,92 @@ class SpotifyClient {
 
         
         return this.getPlaylist()
+    }
+
+    async getArtist(id) {
+        try {
+            const {payload: response} = await Wreck.get(
+                `${SpotifyClient.ARTIST_URL}/${id}`, 
+                {
+                    headers: {
+                        'authorization': `Bearer ${this.userToken}`,
+                        'content-type': `application/json`
+                    }
+                }
+            )
+
+            return JSON.parse(response.toString());
+        } catch (e) {
+            console.log('error getting artist', e)
+        }
+    }
+
+    async getArtistAlbums(id) {
+        const query = QueryString.stringify({
+            'include_groups': 'album,single'
+        })
+
+        try {
+            const {payload: response} = await Wreck.get(
+                `${SpotifyClient.ARTIST_URL}/${id}/albums?${query}`, 
+                {
+                    headers: {
+                        'authorization': `Bearer ${this.userToken}`,
+                        'content-type': `application/json`
+                    }
+                }
+            )
+
+            return JSON.parse(response.toString());
+        } catch (e) {
+            console.log('error getting artist albums', e)
+        }
+    }
+
+    async getArtistTracks(id) {
+        const query = QueryString.stringify({
+            'country': 'from_token'
+        });
+
+        try {
+            const {payload: response} = await Wreck.get(
+                `${SpotifyClient.ARTIST_URL}/${id}/top-tracks?${query}`, 
+                {
+                    headers: {
+                        'authorization': `Bearer ${this.userToken}`,
+                        'content-type': `application/json`
+                    },
+                    payload: QueryString.stringify({
+                        'country': 'from_token'
+                    })
+                }
+            )
+
+            const parsed = JSON.parse(response.toString());
+            const {tracks, ...rest} = parsed;
+            
+            return {items: tracks, ...rest};
+        } catch (e) {
+            console.log('error getting artist tracks', e)
+        }
+    }
+
+    async getAlbum(id) {
+        try {
+            const {payload: response} = await Wreck.get(
+                `${SpotifyClient.ALBUM_URL}/${id}`, 
+                {
+                    headers: {
+                        'authorization': `Bearer ${this.userToken}`,
+                        'content-type': `application/json`
+                    }
+                }
+            )
+
+            return JSON.parse(response.toString());
+        } catch (e) {
+            console.log('error getting album', e)
+        }
     }
 
     async getUserAccessToken(code) {
